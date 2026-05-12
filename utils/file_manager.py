@@ -2,57 +2,57 @@ import os
 import magic
 import shutil
 import pickle
-from typing import Dict
-from tkinter import *
-from tkinter import filedialog
+from typing import Dict, Optional
 
-import utils.config as config
+from tkinter import Tk, filedialog
+
+from core.config import Config
 
 
 class FileManager:
     @staticmethod
-    def select_directory(title):
+    def select_directory(title: str) -> str:
         root = Tk()
         root.withdraw()
         return filedialog.askdirectory(title=title)
 
     @staticmethod
-    def select_file(title):
+    def select_file(title: str) -> str:
         root = Tk()
         root.withdraw()
         return filedialog.askopenfilename(title=title)
 
     @staticmethod
-    def get_size(file_path):
+    def get_size(file_path: str) -> int:
         return os.path.getsize(file_path)
 
     @staticmethod
-    def read_pickle(file_path):
-        with open(file_path, "rb") as file:
-            content = pickle.load(file)
-        return content
+    def read_pickle(file_path: str):
+        with open(file_path, "rb") as f:
+            return pickle.load(f)
 
     @staticmethod
-    def split_file_name(file_name) -> tuple:
+    def dump_pickle(file_path: str, content) -> None:
+        with open(file_path, "wb") as f:
+            pickle.dump(content, f)
+
+    @staticmethod
+    def split_file_name(file_name: str) -> tuple:
         if "." in file_name:
             base_name, extension = file_name.rsplit(".", 1)
             return base_name, extension.lower()
         return file_name, None
 
     @staticmethod
-    def get_extension(file_path) -> str:
+    def get_extension(file_path: str) -> Optional[str]:
         file_mime_type = magic.from_file(file_path, mime=True)
-        extension = file_mime_type.split(r"/")[-1]
-        return extension
+        return file_mime_type.split("/")[-1]
 
     @staticmethod
-    def get_extension_category(extension, extension_category) -> str:
-        return extension_category.get(extension, config.OTHER_FILES_DIR)
-
-    @staticmethod
-    def dump_pickle(file_path, content) -> None:
-        with open(file_path, "wb") as file:
-            pickle.dump(content, file)
+    def get_extension_category(
+        extension: str, extension_category: Dict[str, str]
+    ) -> str:
+        return extension_category.get(extension, Config.OTHER_FILES_DIR)
 
     @staticmethod
     def move_files(source_destination_paths: Dict[str, str]) -> None:
@@ -63,4 +63,4 @@ class FileManager:
                     os.makedirs(destination_dir, exist_ok=True)
                 shutil.move(source_file, destination_file)
             except (IOError, shutil.Error) as e:
-                print(f"Error moving {source_file} to {destination_file}: {e}")
+                print(f"Error moving {source_file} → {destination_file}: {e}")

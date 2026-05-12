@@ -1,16 +1,21 @@
 import xxhash
 import hashlib
-from utils.Enums.hash_algorithm import HashAlgorithm
+
+from enums.hash_algorithm import HashAlgorithm
 
 
 class FileHashCalculator:
     @staticmethod
-    def compute_hash(file_path: str, algorithm: HashAlgorithm = HashAlgorithm.XXHASH, chunk_size: int = 8192) -> str:
+    def compute_hash(
+        file_path: str,
+        algorithm: HashAlgorithm = HashAlgorithm.XXHASH,
+        chunk_size: int = 65536,
+    ) -> str:
         """
         Compute file hash using specified algorithm with chunked reading.
 
         :param file_path: Path to the file.
-        :param algorithm: 'xxhash' (fast) or 'sha256' (secure) or 'md5'.
+        :param algorithm: XXHASH (fast), SHA256 (secure), or MD5.
         :param chunk_size: Bytes to read per chunk.
         :return: Hex digest of the hash.
         """
